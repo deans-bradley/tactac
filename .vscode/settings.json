@@ -1,0 +1,24 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.workingDirectories": ["./frontend", "./backend"],
+  "javascript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "files.associations": {
+    "*.jsx": "javascriptreact"
+  },
+  "emmet.includeLanguages": {
+    "javascriptreact": "html"
+  },
+  "tailwindCSS.includeLanguages": {
+    "javascriptreact": "html"
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/uploads": true
+  }
+}

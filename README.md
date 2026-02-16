@@ -21,7 +21,7 @@ A dynamic photo sharing application built with React, Node.js, Express, and Mong
 
 ### Posts
 - Create posts with image upload (JPEG, PNG, GIF, WebP)
-- Image processing and optimization with Sharp
+- Cloud-based image storage and optimization with Cloudinary
 - Caption support (max 500 characters)
 - Edit and delete own posts
 
@@ -46,7 +46,8 @@ A dynamic photo sharing application built with React, Node.js, Express, and Mong
 - **Node.js** with Express
 - **MongoDB** with Mongoose ODM
 - **JWT** for authentication
-- **Multer** + **Sharp** for image upload and processing
+- **Cloudinary** for cloud image storage and transformations
+- **Multer** for file upload handling
 - **bcryptjs** for password hashing
 - **express-validator** for input validation
 - **Helmet** for security headers
@@ -89,8 +90,13 @@ A dynamic photo sharing application built with React, Node.js, Express, and Mong
    MONGODB_URI=mongodb://localhost:27017/tactac
    JWT_SECRET=your-super-secret-jwt-key-change-in-production
    JWT_EXPIRES_IN=7d
+   CLOUDINARY_CLOUD_NAME=your-cloud-name
+   CLOUDINARY_API_KEY=your-api-key
+   CLOUDINARY_API_SECRET=your-api-secret
    FRONTEND_URL=http://localhost:3000
    ```
+
+   > **Cloudinary Setup**: Sign up at [cloudinary.com](https://cloudinary.com) and get your credentials from the dashboard.
 
 5. Start the server:
    ```bash

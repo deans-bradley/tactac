@@ -4,7 +4,7 @@ A dynamic photo sharing application built with React, Node.js, Express, and Mong
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js->=22.14.0-green.svg)](https://nodejs.org/)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/deans-bradley/project-tools)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/deans-bradley/project-tools)
 
 ## Features
 

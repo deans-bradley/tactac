@@ -3,8 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
@@ -14,9 +12,6 @@ import adminRoutes from './routes/admin.routes.js';
 import { errorHandler } from './middleware/error.middleware.js';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -34,9 +29,6 @@ app.use(cors({
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Static files for uploads
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -56,9 +48,9 @@ app.use(errorHandler);
 // MongoDB connection and server start
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
-const MONGO_DB = process.env.MONGO_DB;
+const DB_NAME = process.env.DB_NAME;
 
-mongoose.connect(MONGODB_URI, { dbName: MONGO_DB })
+mongoose.connect(MONGODB_URI, { dbName: DB_NAME })
   .then(() => {
     console.log('Connected to MongoDB');
     app.listen(PORT, () => {

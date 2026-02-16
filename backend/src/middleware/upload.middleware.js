@@ -1,22 +1,12 @@
 import multer from 'multer';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import sharp from 'sharp';
-import fs from 'fs/promises';
 import { POST_LIMITS } from '../config/constants.js';
+import { 
+  uploadToCloudinary, 
+  deleteFromCloudinary, 
+  getPublicIdFromUrl 
+} from '../config/cloudinary.js';
 
-// Ensure upload directory exists
-const uploadDir = 'uploads';
-const ensureUploadDir = async () => {
-  try {
-    await fs.access(uploadDir);
-  } catch {
-    await fs.mkdir(uploadDir, { recursive: true });
-  }
-};
-ensureUploadDir();
-
-// Configure multer storage
+// Configure multer storage (memory for Cloudinary upload)
 const storage = multer.memoryStorage();
 
 // File filter for images only
@@ -38,7 +28,7 @@ export const upload = multer({
 });
 
 /**
- * Process and save uploaded image
+ * Process and upload image to Cloudinary
  */
 export const processImage = async (req, res, next) => {
   if (!req.file) {
@@ -49,30 +39,29 @@ export const processImage = async (req, res, next) => {
   }
 
   try {
-    const filename = `${uuidv4()}.webp`;
-    const filepath = path.join(uploadDir, filename);
-
-    // Process image with sharp - resize and convert to webp
-    await sharp(req.file.buffer)
-      .resize(1200, 1200, {
-        fit: 'inside',
-        withoutEnlargement: true
-      })
-      .webp({ quality: 80 })
-      .toFile(filepath);
+    // Upload to Cloudinary with transformations
+    const result = await uploadToCloudinary(req.file.buffer, {
+      folder: 'tactac/posts',
+      transformation: [
+        { width: 1200, height: 1200, crop: 'limit' },
+        { quality: 'auto:good' },
+        { fetch_format: 'auto' }
+      ]
+    });
 
     req.processedImage = {
-      filename,
-      path: filepath,
-      url: `/uploads/${filename}`
+      publicId: result.public_id,
+      url: result.secure_url,
+      width: result.width,
+      height: result.height
     };
 
     next();
   } catch (error) {
-    console.error('Image processing error:', error);
+    console.error('Cloudinary upload error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error processing image'
+      message: 'Error uploading image'
     });
   }
 };
@@ -86,43 +75,46 @@ export const processProfileImage = async (req, res, next) => {
   }
 
   try {
-    const filename = `profile-${uuidv4()}.webp`;
-    const filepath = path.join(uploadDir, filename);
-
-    await sharp(req.file.buffer)
-      .resize(400, 400, {
-        fit: 'cover'
-      })
-      .webp({ quality: 80 })
-      .toFile(filepath);
+    // Upload to Cloudinary with profile-specific transformations
+    const result = await uploadToCloudinary(req.file.buffer, {
+      folder: 'tactac/profiles',
+      transformation: [
+        { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+        { quality: 'auto:good' },
+        { fetch_format: 'auto' }
+      ]
+    });
 
     req.processedImage = {
-      filename,
-      path: filepath,
-      url: `/uploads/${filename}`
+      publicId: result.public_id,
+      url: result.secure_url,
+      width: result.width,
+      height: result.height
     };
 
     next();
   } catch (error) {
-    console.error('Profile image processing error:', error);
+    console.error('Cloudinary profile upload error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Error processing profile image'
+      message: 'Error uploading profile image'
     });
   }
 };
 
 /**
- * Delete image file
+ * Delete image from Cloudinary
+ * @param {string} imageUrl - The Cloudinary URL of the image to delete
  */
 export const deleteImage = async (imageUrl) => {
   if (!imageUrl) return;
-  
+
   try {
-    const filename = path.basename(imageUrl);
-    const filepath = path.join(uploadDir, filename);
-    await fs.unlink(filepath);
+    const publicId = getPublicIdFromUrl(imageUrl);
+    if (publicId) {
+      await deleteFromCloudinary(publicId);
+    }
   } catch (error) {
-    console.error('Error deleting image:', error);
+    console.error('Error deleting image from Cloudinary:', error);
   }
 };
